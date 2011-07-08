@@ -83,6 +83,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class GalleryRequestRouter extends ComponentRequestRouter {
 
@@ -168,7 +169,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
       if (function.startsWith("Main")) {
         // récupération des albums de 1er niveau
         gallerySC.setIndexOfFirstItemToDisplay("0");
-        request.setAttribute("root", gallerySC.goToAlbum("0"));
+        AlbumDetail root = gallerySC.goToAlbum("0");
+        request.setAttribute("root", root);
+        request.setAttribute("Albums", gallerySC.addNbPhotos(root.getChildrenAlbumsDetails()));
         // chercher les dernières photos
         boolean viewAllPhoto = false;
         if (flag.equals("admin")) {
@@ -227,6 +230,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           request.setAttribute("FirstPhotoIndex",
               new Integer(gallerySC.getIndexOfFirstItemToDisplay()));
           request.setAttribute("CurrentAlbum", currentAlbum);
+          request.setAttribute("Albums", gallerySC.addNbPhotos(currentAlbum.getChildrenAlbumsDetails()));
           request.setAttribute("Path", gallerySC.getPath(currentAlbum.getNodePK()));
           request.setAttribute("Taille", gallerySC.getTaille());
           request.setAttribute("DragAndDropEnable", gallerySC.isDragAndDropEnabled());

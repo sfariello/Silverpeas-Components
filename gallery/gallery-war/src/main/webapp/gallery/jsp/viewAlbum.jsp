@@ -43,6 +43,7 @@
 			boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
 			boolean isGuest = ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 			boolean isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
+			List      albums      = (List) request.getAttribute("Albums");
 
 			session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 			
@@ -432,9 +433,9 @@ if (currentAlbum.getChildrenDetails() != null) {
 	    out.println("<tr><td>");
 	    out.println("<div id=\"subTopics\">");
 	    out.println("<ul id=\"albumList\" >");
-	    Iterator it = currentAlbum.getChildrenDetails().iterator();
+	    Iterator it = albums.iterator();
 	    while (it.hasNext()) {
-	      NodeDetail unAlbum = (NodeDetail) it.next();
+	      AlbumDetail unAlbum = (AlbumDetail) it.next();
 	      id = unAlbum.getId();
 	      String nom = unAlbum.getName();
 	      String link = "";
@@ -443,8 +444,13 @@ if (currentAlbum.getChildrenDetails() != null) {
 	                resource.getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString("gallery.CopyAlbumLink") + "\"></a>";
 	      }
 	      out.println("<li id=\"album_" + id + "\" class=\"ui-state-default\">");
-	      out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
-	      out.println("<span>" + unAlbum.getDescription() + "</span></a>");
+	      out.println("<a href=\"ViewAlbum?Id=" + id + "\">");
+	      out.println("<strong>");
+	      out.println(unAlbum.getName());
+	      out.println("<span>" + unAlbum.getNbPhotos() + "</span>");
+	      out.println("</strong>");
+	      out.println("<span>" + unAlbum.getDescription() + "</span>");
+	      out.println("</a>");
 	    }
 	    out.println("</ul>");
 	    out.println("</div>");

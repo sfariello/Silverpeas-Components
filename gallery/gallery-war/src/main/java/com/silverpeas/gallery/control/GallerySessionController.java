@@ -277,6 +277,18 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
     return album;
   }
+  
+  public AlbumDetail getAlbumLight(String albumId) {
+    NodePK nodePK = new NodePK(albumId, getComponentId());
+    AlbumDetail album = null;
+    try {
+      album = getGalleryBm().getAlbum(nodePK, viewAllPhoto);
+    } catch (Exception e) {
+      throw new GalleryRuntimeException("GallerySessionController.getAlbumLight()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return album;
+  }
 
   public Collection<PhotoDetail> getNotVisible() {
     Collection<PhotoDetail> photos = new ArrayList<PhotoDetail>();
@@ -1244,6 +1256,14 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
   }
 
+  public Collection<PhotoDetail> getAllPhotos(AlbumDetail album) {
+    try {
+      return getGalleryBm().getAllPhoto(album.getNodePK(), viewAllPhoto);
+    } catch (RemoteException e) {
+      return null;
+    }
+  }
+  
   public ProfileInst getAlbumProfile(String role, String topicId) {
     List<ProfileInst> profiles = new ArrayList<ProfileInst>();
     // List profiles = getAdmin().getProfilesByObject(topicId,
@@ -1920,4 +1940,27 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
+  
+  public Collection<AlbumDetail> addNbPhotos(Collection<AlbumDetail> albums) {
+    // retourne la liste des albums avec leurs nombre de photos
+    Collection<AlbumDetail> newAlbums = new ArrayList<AlbumDetail>();
+    for (AlbumDetail album : albums) {
+      // pour chaque sous album, rechercher le nombre de photos
+      int nbPhotos = 0;
+      Collection<PhotoDetail> allPhotos = getAllPhotos(album);
+      nbPhotos = allPhotos.size();
+      // parcourir ses sous albums pour comptabiliser aussi ses photos
+      AlbumDetail thisAlbum = getAlbumLight(Integer.toString(album.getId()));
+      Collection<AlbumDetail> subAlbums = addNbPhotos(thisAlbum.getChildrenAlbumsDetails());
+      for (AlbumDetail oneSubAlbum : subAlbums) {
+        nbPhotos = nbPhotos + oneSubAlbum.getNbPhotos();
+      }
+      album.setNbPhotos(nbPhotos);
+      newAlbums.add(album);
+    }
+    return newAlbums;
+  }
+  
+  
+  
 }

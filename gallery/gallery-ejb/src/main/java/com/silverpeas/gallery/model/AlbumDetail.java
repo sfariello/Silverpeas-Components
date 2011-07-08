@@ -36,6 +36,9 @@ public class AlbumDetail extends NodeDetail {
   private static final long serialVersionUID = 1L;
   private List<PhotoDetail> photos;
   private String permalink = null;
+  private int nbPhotos;
+
+  
 
   public AlbumDetail(NodeDetail node) {
     setNodePK(node.getNodePK());
@@ -52,6 +55,26 @@ public class AlbumDetail extends NodeDetail {
     setOrder(node.getOrder());
   }
 
+  public int getNbPhotos() {
+    return nbPhotos;
+  }
+
+  public void setNbPhotos(int nbPhotos) {
+    this.nbPhotos = nbPhotos;
+  }
+  
+  public Collection<AlbumDetail> getChildrenAlbumsDetails() {
+    Collection<AlbumDetail> albums = new ArrayList<AlbumDetail>();
+    Collection<NodeDetail> nodes = this.getChildrenDetails();
+    if (nodes != null) {
+      for (NodeDetail node : nodes) {
+        AlbumDetail album = new AlbumDetail(node);
+        albums.add(album);
+      }
+    }
+   return albums;
+  }
+  
   public List<PhotoDetail> getPhotos() {
     return photos;
   }
